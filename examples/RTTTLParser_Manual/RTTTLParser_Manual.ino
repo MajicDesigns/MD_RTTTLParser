@@ -48,7 +48,7 @@ void processRTTTL(void)
   case START: // starting a new melody
     {
       // now reset to start of song and start playing
-      Tune.setTune(songTable[idxTable]);
+      Tune.setTune_P(songTable[idxTable]);
       Serial.print("\n");
       Serial.print(Tune.getTitle());
       state = PLAYING;

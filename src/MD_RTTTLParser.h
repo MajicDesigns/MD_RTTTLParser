@@ -11,7 +11,7 @@
 \mainpage The RTTTTL Parser Library
 
 Ring Tones Text Transfer Language (RTTTL) is a simple text-based format used to 
-create ringtones for a mobile phones, developed by Nokia.
+create ring tones for a mobile phones, developed by Nokia.
 
 An example of a RTTTL string is
 
@@ -21,7 +21,7 @@ Whilst it started as a mechanism for defining and distributing ring tone, RTTTL
 is useful to more generally encode and playback simple tunes, and this library 
 simplifies the parsing and playing of these tunes using either
 - self management of all playing control
-- library managemnent with callback to user code for note generation
+- library management with callback to user code for note generation
 
 Topics
 ------
@@ -56,7 +56,7 @@ Default parameters
 ------------------
 The default value section is a set of values separated by commas, where each value contains
 a key and a value separated by an equal ('=') character, which describes certain global defaults 
-for the execution of the ringtone. Possible names are
+for the execution of the ring tone. Possible names are
 
 |Id | Parameter                        |
 |:-:|:---------------------------------|
@@ -135,7 +135,7 @@ also present in many RTTTL strings:
 | Id | Note Name           |
 |:--:|---------------------|
 | B_ | B flat (same as A#) |
-| C_ | C flat (saem as B)  |
+| C_ | C flat (same as B)  |
 | D_ | D flat (same as C#) |
 | E_ | E flat (same as D#) |
 | F_ | F flat (same as E)  |
@@ -270,9 +270,9 @@ public:
    * @{
    */
   /**
-   * Set the current tune.
+   * Set the current tune (dynamic RAM).
    *
-   * An RTTTL tune is an ASCII string of nul terminated characters (C-style string)
+   * An RTTTL tune is a nul terminated string of ASCII characters (C-style string)
    * that conform to the \ref pageRTTTLFormat. This method provides the library with
    * the address of the next string to be parsed. The string is not modified by the 
    * library. The string should not contain any spaces.
@@ -280,17 +280,32 @@ public:
    * Following this call, the getTitle(), getOctaveDefault() and getBPMDefault() 
    * methods may be interrogated for information about the RTTTL string header.
    *
-   * Where PROGMEM is supported, the library expects this string to be stored in PROGMEM
-   * and and processes this accordingly. 
-   *
    * \sa getTitle(), getOctaveDefault(), getBPMDefault(), \ref pageRTTTLFormat
    *
-   * \param p   a pointer to the RTTTL string to be processed.
+   * \param p   a pointer to the RTTTL string stored in RAM to be processed.
    * \return true if the call was successful, false otherwise.
    */
-   void setTune(const char* p);
+   inline void setTune(const char* p) { _isPROGMEM = false;  newStringInit(p); }
 
-  /**
+   /**
+    * Set the current tune (PROGMEM flash RAM).
+    *
+    * This works like the setTune() method but the string is in PROGMEM flash RAM.
+    * 
+    * Where PROGMEM is supported, the library expects this string to be stored in PROGMEM
+    * and processes it accordingly.
+    *
+    * For architectures that don't need or don't support PROGMEM, this should resolve 
+    * itself to working just like setTune().
+    *
+    * \sa setTune()
+    *
+    * \param p   a pointer to the RTTTL string stored in PROGMEM to be processed.
+    * \return true if the call was successful, false otherwise.
+    */
+    inline void setTune_P(const char* p) { _isPROGMEM = true;  newStringInit(p); }
+   
+   /**
    * Parse the next note in the RTTTL string.
    *
    * Parses the next note in the RTTL string and passes back the parameters to the 
@@ -299,7 +314,7 @@ public:
    *
    * - The _octave_ parameter receives the scale parameter for the note. The octave 
    * specified in the RTTTL string is passed back directly to the caller. Any scale 
-   * boundary checking should be done by the in the callin application. This allows 
+   * boundary checking should be done by the in the calling application. This allows 
    * applications controlling hardware with broader capability to decide whether they 
    * should play this note.
    *
@@ -430,6 +445,22 @@ public:
    */
   uint16_t getBPMDefault(void) { return(_dBPM); }
 
+  /**
+   * Get the total tune playing time.
+   *
+   * Once the tune has been set, the total remaining time can be interrogated 
+   * at any stage of the playing process. The time includes all notes and pauses 
+   * defined in the RTTTL string.
+   *
+   * If this is invoked before the tune has started playing it will return the 
+   * total tune playing time.
+   *
+   * \sa setTune()
+   *
+   * \return the remaining playing time in milliseconds.
+   */
+  uint32_t getTimeToEnd(void);
+
   /** @} */
 
 private:
@@ -461,6 +492,7 @@ private:
   typedef enum { IDLE, PLAYING, WAIT } state_t; // enumerated states for the FSM
   
   // Control variables
+  bool _isPROGMEM;            // current string being parsed is in PROGMEM
   const char* _pTune;         // ppinmter to the tune memory, set by setTune()
   uint16_t _curIdx;           // current index into _pTune
   bool _eoln;                 // flag set true when the string end of line is reached
@@ -486,7 +518,8 @@ private:
   inline void ungetCh() { if (_curIdx != 0) _curIdx--; }            // reverse one char back in the string
   inline uint32_t calcNoteTime(uint16_t bpm) { return((60 * 1000L / bpm) * 4); }  // time for whole note in ms
 
-  char getCh(void);                     // get the necxt character fomr the RTTTL string
+  void newStringInit(const char *p);    // set up defaults for a new string
+  char getCh(void);                     // get the next character from the RTTTL string
   uint16_t getNum(void);                // get the next number in the RTTTL string
   void synch(char cSync);               // synch the position in the string to after cSync
   int8_t findNoteId(const char* note);  // translate note string into noteId

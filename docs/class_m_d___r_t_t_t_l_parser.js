@@ -9,5 +9,6 @@ var class_m_d___r_t_t_t_l_parser =
     [ "nextNote", "class_m_d___r_t_t_t_l_parser.html#af123e1470d42bf73dc872cca3e6fcbf0", null ],
     [ "run", "class_m_d___r_t_t_t_l_parser.html#a0f7e96c3927b848fbbcc483c322e77b1", null ],
     [ "setCallback", "class_m_d___r_t_t_t_l_parser.html#acb46df1f706fc0d96c7599f59fcaf000", null ],
-    [ "setTune", "class_m_d___r_t_t_t_l_parser.html#a6bb4b9ea738521528472621bb7002fcd", null ]
+    [ "setTune", "class_m_d___r_t_t_t_l_parser.html#a6bb4b9ea738521528472621bb7002fcd", null ],
+    [ "setTune_P", "class_m_d___r_t_t_t_l_parser.html#aa71d52c073ccd70dc023984a326d6e35", null ]
 ];

@@ -66,7 +66,8 @@ int8_t MD_RTTTLParser::findNoteId(const char* note)
   return(id);
 }
 
-void MD_RTTTLParser::setTune(const char* p)
+
+void MD_RTTTLParser::newStringInit(const char* p)
 {
   // set up defaults
   _dDuration = DEFAULT_DURATION;
@@ -87,7 +88,10 @@ char MD_RTTTLParser::getCh(void)
 
   do
   {
-    c = pgm_read_byte(&_pTune[_curIdx]);
+    if (_isPROGMEM)
+      c = pgm_read_byte(&_pTune[_curIdx]);
+    else
+      c = _pTune[_curIdx];
     //DEBUGC(c);
     _eoln = (c == '\0');
     if (!_eoln) _curIdx++;
@@ -121,6 +125,21 @@ void MD_RTTTLParser::synch(char cSync)
   {
     c = getCh();
   } while (c != '\0' && c != cSync);
+}
+
+uint32_t MD_RTTTLParser::getTimeToEnd(void)
+{
+  uint32_t t = 0;
+  uint8_t octave;
+  int8_t noteId;
+  uint16_t duration;
+  uint16_t idx = _curIdx; // remember where we are in the string
+
+  while (nextNote(octave, noteId, duration))
+    t += duration;
+
+  _curIdx = idx;    // restore where we were
+  return(t);
 }
 
 void MD_RTTTLParser::processHeader(void)

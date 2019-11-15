@@ -20,7 +20,7 @@
 const uint8_t PIN_TONE = 3;
 
 //Global objects
-Tone player;
+Tone Player;
 MD_MusicTable T;
 MD_RTTTLParser Tune;
 
@@ -34,15 +34,17 @@ void RTTTLhandler(uint8_t octave, uint8_t noteId, uint32_t duration, bool activa
   if (activate)
   {
     if (T.findNoteOctave(noteId, octave))
-      player.play(T.getFrequency(), duration);
+      Player.play(T.getFrequency(), duration);
   }
   else
-    player.stop();    // technically not required as we used duration
+    Player.stop();
 }
 
 void setup(void)
 {
-  player.begin(PIN_TONE);
+  Serial.begin(57600);
+
+  Player.begin(PIN_TONE);
 
   Tune.begin();
   Tune.setCallback(RTTTLhandler);
@@ -52,29 +54,31 @@ void loop(void)
 {
   const uint16_t PAUSE_TIME = 5000;  // pause time between melodies
 
-  static enum { NEXT, START, PLAYING, WAIT_BETWEEN } state = START; // current state
+  static enum { START, PLAYING, WAIT_BETWEEN } state = START; // current state
   static uint32_t timeStart = 0;    // millis() timing marker
   static uint8_t idxTable = 0;      // index of next song to play
   
   // Manage feeding songs to the RTTTL library
   switch (state)
   {
-  case NEXT:      // set up for next song
-    idxTable++;
-    if (idxTable == ARRAY_SIZE(songTable))
-      idxTable = 0;
-    state = START;
-    break;
-
   case START: // starting a new melody
-  {
-    // now reset to start of song and start playing
-    Tune.setTune(songTable[idxTable]);
-    Serial.print("\n");
-    Serial.print(Tune.getTitle());
-    state = PLAYING;
-  }
-  break;
+    {
+      // set to start of song and start playing
+      Tune.setTune_P(songTable[idxTable]);
+      Serial.print(F("\n"));
+      Serial.print(Tune.getTitle());
+      Serial.print(F("  "));
+      Serial.print(Tune.getTimeToEnd());
+      Serial.print(F(" ms"));
+
+      // set up for next song
+      idxTable++;
+      if (idxTable == ARRAY_SIZE(songTable))
+        idxTable = 0;
+
+      state = PLAYING;
+    }
+    break;
 
   case PLAYING:     // playing the melody
     if (Tune.run())
@@ -86,7 +90,7 @@ void loop(void)
 
   case WAIT_BETWEEN:  // wait at the end of a melody
     if (millis() - timeStart >= PAUSE_TIME)
-      state = NEXT;     // start the next melody
+      state = START;     // start the next melody
     break;
   }
 }
