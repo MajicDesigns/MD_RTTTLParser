@@ -12,13 +12,14 @@ MD_RTTTLParser	KEYWORD1
 #######################################
 begin	KEYWORD2
 setTune	KEYWORD2
+setTune_P	KEYWORD2
 nextNote	KEYWORD2
+setCallback	KEYWORD2
+run	KEYWORD2
 isEnded	KEYWORD2
 getOctaveDefault	KEYWORD2
 getBPMDefault	KEYWORD2
 getTitle	KEYWORD2
-setCallback	KEYWORD2
-run	KEYWORD2
 
 ######################################
 # Constants/defines (LITERAL1)

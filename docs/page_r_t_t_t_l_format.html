@@ -101,7 +101,7 @@ $(document).ready(function(){initNavTree('page_r_t_t_t_l_format.html','');});
 <h2>The Title </h2>
 <p>The title of the song, which can be no more than 10 characters. The name of the example song (above) is 'Looney'.</p>
 <h2>Default parameters </h2>
-<p>The default value section is a set of values separated by commas, where each value contains a key and a value separated by an equal ('=') character, which describes certain global defaults for the execution of the ringtone. Possible names are</p>
+<p>The default value section is a set of values separated by commas, where each value contains a key and a value separated by an equal ('=') character, which describes certain global defaults for the execution of the ring tone. Possible names are</p>
 <table class="markdownTable">
 <tr class="markdownTableHead">
 <th class="markdownTableHeadCenter">Id  </th><th class="markdownTableHeadLeft">Parameter   </th></tr>
@@ -112,7 +112,7 @@ $(document).ready(function(){initNavTree('page_r_t_t_t_l_format.html','');});
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyCenter">b  </td><td class="markdownTableBodyLeft">Beat or Tempo (beats per minute)   </td></tr>
 </table>
-<p>If these parameters are not specified, the values "d=4,o=6,b=63" are be used:</p>
+<p>If these parameters are not specified, the values "d=4,o=6,b=63" are used.</p>
 <p>The duration parameter is specified as a fraction of a full note duration.</p>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -146,8 +146,8 @@ $(document).ready(function(){initNavTree('page_r_t_t_t_l_format.html','');});
 <p>BPM determines how much time each note or pause can take and is the number of quarter notes in a minute. The BPM values can be one of 25, 28, 31, 35, 40, 45, 50, 56, 63, 70, 80, 90, 100, 112, 125, 140, 160, 180, 200, 225, 250, 285, 320, 355, 400, 450, 500, 565, 635, 715, 800 and 900.</p>
 <h2>Song data </h2>
 <p>The last section of the string contains the song data as note specifications separated by a comma. A note is encoded by: </p><pre class="fragment">[&lt;duration&gt;]&lt;note&gt;[&lt;scale&gt;][&lt;special-duration&gt;]
-</pre><p>&lt;special-duration&gt; represents dotted rhythm patterns, formed by appending a period ('.') character to the end of duration-note-octave tuple in the song data. This increases the duration of the note to 1.5 times its normal duration. Many RTTTL strings swap the &lt;special-duration&gt; and &lt;scale&gt; fields (ie, the octave value comes after the dot notation). The library recognizes and processes either form.</p>
-<p>The optional values &lt;duration&gt; and/or &lt;scale&gt; are omitted, the default parameters from the default section of the RTTTL string are used instead.</p>
+</pre><p><em>Special-duration</em> represents dotted rhythm patterns, formed by appending a period ('.') character to the end of duration-note-octave tuple in the song data. This increases the duration of the note to 1.5 times its normal duration. Many RTTTL strings swap the <em>special-duration</em> and <em>scale</em> fields (ie, the octave value comes after the dot notation). The library recognizes and processes either form.</p>
+<p>When the optional values <em>duration and/or _scale</em> are omitted, the default parameters from the default section of the RTTTL string are used instead.</p>
 <p>The following notes can be used in a RTTTL string:</p>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -187,7 +187,7 @@ $(document).ready(function(){initNavTree('page_r_t_t_t_l_format.html','');});
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyCenter">B_  </td><td class="markdownTableBodyNone">B flat (same as A#)   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyCenter">C_  </td><td class="markdownTableBodyNone">C flat (saem as B)   </td></tr>
+<td class="markdownTableBodyCenter">C_  </td><td class="markdownTableBodyNone">C flat (same as B)   </td></tr>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyCenter">D_  </td><td class="markdownTableBodyNone">D flat (same as C#)   </td></tr>
 <tr class="markdownTableRowEven">
@@ -229,7 +229,7 @@ $(document).ready(function(){initNavTree('page_r_t_t_t_l_format.html','');});
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Nov 14 2019 15:36:12 for RTTTLParser Library by
+    <li class="footer">Generated on Sat Nov 16 2019 12:57:59 for RTTTLParser Library by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.16 </li>
   </ul>

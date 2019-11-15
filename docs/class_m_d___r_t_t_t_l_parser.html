@@ -108,6 +108,8 @@ Public Member Functions</h2></td></tr>
 <tr><td colspan="2"><div class="groupHeader">Playing Control methods.</div></td></tr>
 <tr class="memitem:a6bb4b9ea738521528472621bb7002fcd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_d___r_t_t_t_l_parser.html#a6bb4b9ea738521528472621bb7002fcd">setTune</a> (const char *p)</td></tr>
 <tr class="separator:a6bb4b9ea738521528472621bb7002fcd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa71d52c073ccd70dc023984a326d6e35"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_d___r_t_t_t_l_parser.html#aa71d52c073ccd70dc023984a326d6e35">setTune_P</a> (const char *p)</td></tr>
+<tr class="separator:aa71d52c073ccd70dc023984a326d6e35"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af123e1470d42bf73dc872cca3e6fcbf0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_d___r_t_t_t_l_parser.html#af123e1470d42bf73dc872cca3e6fcbf0">nextNote</a> (uint8_t &amp;octave, int8_t &amp;noteId, uint16_t &amp;duration)</td></tr>
 <tr class="separator:af123e1470d42bf73dc872cca3e6fcbf0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0f7e96c3927b848fbbcc483c322e77b1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_d___r_t_t_t_l_parser.html#a0f7e96c3927b848fbbcc483c322e77b1">run</a> (void)</td></tr>
@@ -123,6 +125,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:af26e4734f2729f2ef5a8af7c2e2a3f8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a40f68fab6990223eb75ba8c1c35afd1f"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_d___r_t_t_t_l_parser.html#a40f68fab6990223eb75ba8c1c35afd1f">getBPMDefault</a> (void)</td></tr>
 <tr class="separator:a40f68fab6990223eb75ba8c1c35afd1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af72004803055614266585b765fb95699"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_d___r_t_t_t_l_parser.html#af72004803055614266585b765fb95699">getTimeToEnd</a> (void)</td></tr>
+<tr class="separator:af72004803055614266585b765fb95699"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Base class for the <a class="el" href="class_m_d___r_t_t_t_l_parser.html">MD_RTTTLParser</a> library </p>
@@ -212,6 +216,29 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="af72004803055614266585b765fb95699"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af72004803055614266585b765fb95699">&#9670;&nbsp;</a></span>getTimeToEnd()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t MD_RTTTLParser::getTimeToEnd </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Get the total tune playing time.</p>
+<p>Once the tune has been set, the total remaining time can be interrogated at any stage of the playing process. The time includes all notes and pauses defined in the RTTTL string.</p>
+<p>If this is invoked before the tune has started playing it will return the total tune playing time.</p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="class_m_d___r_t_t_t_l_parser.html#a6bb4b9ea738521528472621bb7002fcd">setTune()</a></dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>the remaining playing time in milliseconds. </dd></dl>
+
+</div>
+</div>
 <a id="a5a92670069924613604f9d2f1b4ffd0e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5a92670069924613604f9d2f1b4ffd0e">&#9670;&nbsp;</a></span>getTitle()</h2>
 
@@ -290,7 +317,7 @@ Public Member Functions</h2></td></tr>
 <p>Parse the next note in the RTTTL string.</p>
 <p>Parses the next note in the RTTL string and passes back the parameters to the calling application for sound production. All parameters are passed by reference and will be filled in with the note attributes if the note was correctly processed.</p>
 <ul>
-<li>The <em>octave</em> parameter receives the scale parameter for the note. The octave specified in the RTTTL string is passed back directly to the caller. Any scale boundary checking should be done by the in the callin application. This allows applications controlling hardware with broader capability to decide whether they should play this note.</li>
+<li>The <em>octave</em> parameter receives the scale parameter for the note. The octave specified in the RTTTL string is passed back directly to the caller. Any scale boundary checking should be done by the in the calling application. This allows applications controlling hardware with broader capability to decide whether they should play this note.</li>
 <li>The <em>noteId</em> is the number of the note within the octave. A pause (RTTTL note P) is represented by a -1 noteID, the remaining notes are numbered according to the ISO standard: <pre class="fragment">C=0, C#=1, D=2, D#=3, E=4, F=5, F#=6, G=7, G#=8, A=9, A#=10, B=11
 </pre></li>
 <li>The <em>duration</em> is the how many milliseconds to play the note or pause.</li>
@@ -383,14 +410,43 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Set the current tune.</p>
-<p>An RTTTL tune is an ASCII string of nul terminated characters (C-style string) that conform to the <a class="el" href="page_r_t_t_t_l_format.html">RTTTL String format</a>. This method provides the library with the address of the next string to be parsed. The string is not modified by the library. The string should not contain any spaces.</p>
+<p>Set the current tune (dynamic RAM).</p>
+<p>An RTTTL tune is a nul terminated string of ASCII characters (C-style string) that conform to the <a class="el" href="page_r_t_t_t_l_format.html">RTTTL String format</a>. This method provides the library with the address of the next string to be parsed. The string is not modified by the library. The string should not contain any spaces.</p>
 <p>Following this call, the <a class="el" href="class_m_d___r_t_t_t_l_parser.html#a5a92670069924613604f9d2f1b4ffd0e">getTitle()</a>, <a class="el" href="class_m_d___r_t_t_t_l_parser.html#af26e4734f2729f2ef5a8af7c2e2a3f8d">getOctaveDefault()</a> and <a class="el" href="class_m_d___r_t_t_t_l_parser.html#a40f68fab6990223eb75ba8c1c35afd1f">getBPMDefault()</a> methods may be interrogated for information about the RTTTL string header.</p>
-<p>Where PROGMEM is supported, the library expects this string to be stored in PROGMEM and and processes this accordingly.</p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="class_m_d___r_t_t_t_l_parser.html#a5a92670069924613604f9d2f1b4ffd0e">getTitle()</a>, <a class="el" href="class_m_d___r_t_t_t_l_parser.html#af26e4734f2729f2ef5a8af7c2e2a3f8d">getOctaveDefault()</a>, <a class="el" href="class_m_d___r_t_t_t_l_parser.html#a40f68fab6990223eb75ba8c1c35afd1f">getBPMDefault()</a>, <a class="el" href="page_r_t_t_t_l_format.html">RTTTL String format</a></dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">p</td><td>a pointer to the RTTTL string to be processed. </td></tr>
+    <tr><td class="paramname">p</td><td>a pointer to the RTTTL string stored in RAM to be processed. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if the call was successful, false otherwise. </dd></dl>
+
+</div>
+</div>
+<a id="aa71d52c073ccd70dc023984a326d6e35"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa71d52c073ccd70dc023984a326d6e35">&#9670;&nbsp;</a></span>setTune_P()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void MD_RTTTLParser::setTune_P </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>p</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Set the current tune (PROGMEM flash RAM).</p>
+<p>This works like the <a class="el" href="class_m_d___r_t_t_t_l_parser.html#a6bb4b9ea738521528472621bb7002fcd">setTune()</a> method but the string is in PROGMEM flash RAM.</p>
+<p>Where PROGMEM is supported, the library expects this string to be stored in PROGMEM and processes it accordingly.</p>
+<p>For architectures that don't need or don't support PROGMEM, this should resolve itself to working just like <a class="el" href="class_m_d___r_t_t_t_l_parser.html#a6bb4b9ea738521528472621bb7002fcd">setTune()</a>.</p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="class_m_d___r_t_t_t_l_parser.html#a6bb4b9ea738521528472621bb7002fcd">setTune()</a></dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">p</td><td>a pointer to the RTTTL string stored in PROGMEM to be processed. </td></tr>
   </table>
   </dd>
 </dl>
@@ -408,7 +464,7 @@ Public Member Functions</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="class_m_d___r_t_t_t_l_parser.html">MD_RTTTLParser</a></li>
-    <li class="footer">Generated on Thu Nov 14 2019 15:36:12 for RTTTLParser Library by
+    <li class="footer">Generated on Sat Nov 16 2019 12:57:59 for RTTTLParser Library by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.16 </li>
   </ul>

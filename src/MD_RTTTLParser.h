@@ -11,7 +11,7 @@
 \mainpage The RTTTTL Parser Library
 
 Ring Tones Text Transfer Language (RTTTL) is a simple text-based format used to 
-create ringtones for a mobile phones, developed by Nokia.
+create ring tones for a mobile phones, developed by Nokia.
 
 An example of a RTTTL string is
 
@@ -21,7 +21,7 @@ Whilst it started as a mechanism for defining and distributing ring tone, RTTTL
 is useful to more generally encode and playback simple tunes, and this library 
 simplifies the parsing and playing of these tunes using either
 - self management of all playing control
-- library managemnent with callback to user code for note generation
+- library management with callback to user code for note generation
 
 Topics
 ------
@@ -56,7 +56,7 @@ Default parameters
 ------------------
 The default value section is a set of values separated by commas, where each value contains
 a key and a value separated by an equal ('=') character, which describes certain global defaults 
-for the execution of the ringtone. Possible names are
+for the execution of the ring tone. Possible names are
 
 |Id | Parameter                        |
 |:-:|:---------------------------------|
@@ -64,7 +64,7 @@ for the execution of the ringtone. Possible names are
 | o	| Octave                           |
 | b	| Beat or Tempo (beats per minute) |
 
-If these parameters are not specified, the values "d=4,o=6,b=63" are be used: 
+If these parameters are not specified, the values "d=4,o=6,b=63" are used. 
 
 The duration parameter is specified as a fraction of a full note duration.
 
@@ -100,13 +100,13 @@ separated by a comma. A note is encoded by:
 
     [<duration>]<note>[<scale>][<special-duration>]
 
-<special-duration> represents dotted rhythm patterns, formed by appending a period
+_Special-duration_ represents dotted rhythm patterns, formed by appending a period
 ('.') character to the end of duration-note-octave tuple in the song data. This
 increases the duration of the note to 1.5 times its normal duration. Many RTTTL 
-strings swap the <special-duration> and <scale> fields (ie, the octave value comes 
+strings swap the _special-duration_ and _scale_ fields (ie, the octave value comes 
 after the dot notation). The library recognizes and processes either form.
 
-The optional values <duration> and/or <scale> are omitted, the default
+When the optional values _duration and/or _scale_ are omitted, the default
 parameters from the default section of the RTTTL string are used instead. 
 
 The following notes can be used in a RTTTL string:
@@ -135,7 +135,7 @@ also present in many RTTTL strings:
 | Id | Note Name           |
 |:--:|---------------------|
 | B_ | B flat (same as A#) |
-| C_ | C flat (saem as B)  |
+| C_ | C flat (same as B)  |
 | D_ | D flat (same as C#) |
 | E_ | E flat (same as D#) |
 | F_ | F flat (same as E)  |
@@ -176,41 +176,80 @@ The object definition requires no additional parameters.
 
 setup()
 -------
-The setup() function must invoke the begin() method. All other library initialisation 
+The setup() function must invoke the begin() method. All other library initialization 
 takes place at this time.
 
 Sound output
 ------------
-Sound output is implemented in the application. The application is provided with the octave
-or scale, the note number and the duration of that note (see nextNote() for details). How the
-application functions depends on the playback mode implemented, as described in the two 
-sections that follow.
+To keep the parser library generic, sound output must be implemented 
+in the application as the type of hardware used will dictate how the 
+sound is produced.
+
+The parser will translate the information from the RTTTL string into
+parameters that the application can use:
+
++ __octave__ - generally in the valid range as is represented in the RTTTL 
+string but no checking is done in the parser to enforce this.
++ __note identifier__ - the notes are numbered according to the ISO standard
+numbering  (C=0, C#=1, ..., A#=11) and can be used directly with the 
+MD_MusicTable library to obtain note frequency or midi note numbers. 
+The library will also translate the non-standard flat notes into the 
+correct equivalent. Pause values are passed back as note -1 and need 
+to be explicitly checked.
++ __duration__ - the playing tempo and type of note, including dot notation, 
+is converted into the number of milliseconds for the note or pause.
 
 Application managed playback
 ----------------------------
-The RTTLParser_Manual example demonstrates the library used in this mode.
+The RTTLParser_Manual example demonstrates this use of the library.
 
-In this mode the application has complete control over how the RTTTL file is
-processed.
+In this mode the application has complete control over how the RTTTL 
+file is processed.
 
-+ The tune to play is set up using the setTune() method.
-+ Each note is obtained using the nextNote() method. The application invokes the sound 
-generation hardware to produce a sound.
-+ The application implements the logic required for the note or pause timing before 
-processing the next note.
+A simplified flow for the application is:
+
++ setTune() is used initialize the library for the specified RTTTL
+string.
++ nextNote() is used to retrieve the next note in the sequence. In 
+the case of a playable note, the application invokes the sound 
+generation hardware. The application implements the logic required 
+for the note or pause timing before processing the next note.
++ nextNote() returns true when the end of the RTTTL string is 
+reached. Alternatively, the isEoln() method can be used to test 
+for end of line being reached.
 
 Library managed playback
 ------------------------
-The RTTLParser_Cback example demonstrates the library used in this mode.
+The RTTLParser_Cback example demonstrates this use of the library.
 
-In this mode the application provides the library with a callback that will manage the 
-sound generation hardware and lets the library manage all the duration timing.
+In this mode the application provides the library with a callback 
+that will manage the sound generation hardware. The library will 
+manage duration timing for pauses (ie, the application is not 
+aware of these) and will provide the callback with note on and note 
+off events for the application to process.
 
-+ setCallback() is used to set the callback function.
-+ The tune to play is set up using the setTune() method.
-+ The run() method is invoked every time through main program loop.
-+ As required by timing, the callback function will be called from the library to 
-allow the application to manage turning notes on and off.
+The simplified flow for the application is:
+
++ setCallback() is used to register the callback function (can be 
+done in setup()).
++ setTune() is used initialize the library for the specified RTTTL 
+string.
++ run() is invoked every time through main program loop. This will 
+run a Finite State Machine that manages the sequencing and timing 
+of notes, and invokes the callback when required.
++ run() returns true when the end of the RTTTL string has been reached.
+
+Parsing without playback
+------------------------
+Parsing without playback is identical to an application managed playback
+without 'playing' the notes. The entire string can be scanned very fast 
+when the note durations and pauses are ignored. Once the string has been 
+parsed, it will need to be reset using setTune().
+
+Parsing an RTTTL string is useful to gather information about the string, 
+such as what octaves are being used, the range of notes, etc. These can 
+then be used to modify subsequent playback (eg, shifting the octave range)
+to suit a particular sound output device.
 
 \page pageCompileSwitch Compiler Switches
 
@@ -270,9 +309,9 @@ public:
    * @{
    */
   /**
-   * Set the current tune.
+   * Set the current tune (dynamic RAM).
    *
-   * An RTTTL tune is an ASCII string of nul terminated characters (C-style string)
+   * An RTTTL tune is a nul terminated string of ASCII characters (C-style string)
    * that conform to the \ref pageRTTTLFormat. This method provides the library with
    * the address of the next string to be parsed. The string is not modified by the 
    * library. The string should not contain any spaces.
@@ -280,17 +319,32 @@ public:
    * Following this call, the getTitle(), getOctaveDefault() and getBPMDefault() 
    * methods may be interrogated for information about the RTTTL string header.
    *
-   * Where PROGMEM is supported, the library expects this string to be stored in PROGMEM
-   * and and processes this accordingly. 
-   *
    * \sa getTitle(), getOctaveDefault(), getBPMDefault(), \ref pageRTTTLFormat
    *
-   * \param p   a pointer to the RTTTL string to be processed.
+   * \param p   a pointer to the RTTTL string stored in RAM to be processed.
    * \return true if the call was successful, false otherwise.
    */
-   void setTune(const char* p);
+   inline void setTune(const char* p) { _isPROGMEM = false;  newStringInit(p); }
 
-  /**
+   /**
+    * Set the current tune (PROGMEM flash RAM).
+    *
+    * This works like the setTune() method but the string is in PROGMEM flash RAM.
+    * 
+    * Where PROGMEM is supported, the library expects this string to be stored in PROGMEM
+    * and processes it accordingly.
+    *
+    * For architectures that don't need or don't support PROGMEM, this should resolve 
+    * itself to working just like setTune().
+    *
+    * \sa setTune()
+    *
+    * \param p   a pointer to the RTTTL string stored in PROGMEM to be processed.
+    * \return true if the call was successful, false otherwise.
+    */
+    inline void setTune_P(const char* p) { _isPROGMEM = true;  newStringInit(p); }
+   
+   /**
    * Parse the next note in the RTTTL string.
    *
    * Parses the next note in the RTTL string and passes back the parameters to the 
@@ -299,7 +353,7 @@ public:
    *
    * - The _octave_ parameter receives the scale parameter for the note. The octave 
    * specified in the RTTTL string is passed back directly to the caller. Any scale 
-   * boundary checking should be done by the in the callin application. This allows 
+   * boundary checking should be done by the in the calling application. This allows 
    * applications controlling hardware with broader capability to decide whether they 
    * should play this note.
    *
@@ -430,6 +484,22 @@ public:
    */
   uint16_t getBPMDefault(void) { return(_dBPM); }
 
+  /**
+   * Get the total tune playing time.
+   *
+   * Once the tune has been set, the total remaining time can be interrogated 
+   * at any stage of the playing process. The time includes all notes and pauses 
+   * defined in the RTTTL string.
+   *
+   * If this is invoked before the tune has started playing it will return the 
+   * total tune playing time.
+   *
+   * \sa setTune()
+   *
+   * \return the remaining playing time in milliseconds.
+   */
+  uint32_t getTimeToEnd(void);
+
   /** @} */
 
 private:
@@ -461,6 +531,7 @@ private:
   typedef enum { IDLE, PLAYING, WAIT } state_t; // enumerated states for the FSM
   
   // Control variables
+  bool _isPROGMEM;            // current string being parsed is in PROGMEM
   const char* _pTune;         // ppinmter to the tune memory, set by setTune()
   uint16_t _curIdx;           // current index into _pTune
   bool _eoln;                 // flag set true when the string end of line is reached
@@ -486,7 +557,8 @@ private:
   inline void ungetCh() { if (_curIdx != 0) _curIdx--; }            // reverse one char back in the string
   inline uint32_t calcNoteTime(uint16_t bpm) { return((60 * 1000L / bpm) * 4); }  // time for whole note in ms
 
-  char getCh(void);                     // get the necxt character fomr the RTTTL string
+  void newStringInit(const char *p);    // set up defaults for a new string
+  char getCh(void);                     // get the next character from the RTTTL string
   uint16_t getNum(void);                // get the next number in the RTTTL string
   void synch(char cSync);               // synch the position in the string to after cSync
   int8_t findNoteId(const char* note);  // translate note string into noteId

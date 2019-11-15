@@ -95,33 +95,44 @@ $(document).ready(function(){initNavTree('page_library.html','');});
 <div class="textblock"><h2>Defining the object </h2>
 <p>The object definition requires no additional parameters.</p>
 <h2>setup() </h2>
-<p>The setup() function must invoke the begin() method. All other library initialisation takes place at this time.</p>
+<p>The setup() function must invoke the begin() method. All other library initialization takes place at this time.</p>
 <h2>Sound output </h2>
-<p>Sound output is implemented in the application. The application is provided with the octave or scale, the note number and the duration of that note (see nextNote() for details). How the application functions depends on the playback mode implemented, as described in the two sections that follow.</p>
-<h2>Application managed playback </h2>
-<p>The RTTLParser_Manual example demonstrates the library used in this mode.</p>
-<p>In this mode the application has complete control over how the RTTTL file is processed.</p>
+<p>To keep the parser library generic, sound output must be implemented in the application as the type of hardware used will dictate how the sound is produced.</p>
+<p>The parser will translate the information from the RTTTL string into parameters that the application can use:</p>
 <ul>
-<li>The tune to play is set up using the setTune() method.</li>
-<li>Each note is obtained using the nextNote() method. The application invokes the sound generation hardware to produce a sound.</li>
-<li>The application implements the logic required for the note or pause timing before processing the next note.</li>
+<li><b>octave</b> - generally in the valid range as is represented in the RTTTL string but no checking is done in the parser to enforce this.</li>
+<li><b>note identifier</b> - the notes are numbered according to the ISO standard numbering (C=0, C#=1, ..., A#=11) and can be used directly with the MD_MusicTable library to obtain note frequency or midi note numbers. The library will also translate the non-standard flat notes into the correct equivalent. Pause values are passed back as note -1 and need to be explicitly checked.</li>
+<li><b>duration</b> - the playing tempo and type of note, including dot notation, is converted into the number of milliseconds for the note or pause.</li>
+</ul>
+<h2>Application managed playback </h2>
+<p>The RTTLParser_Manual example demonstrates this use of the library.</p>
+<p>In this mode the application has complete control over how the RTTTL file is processed.</p>
+<p>A simplified flow for the application is:</p>
+<ul>
+<li>setTune() is used initialize the library for the specified RTTTL string.</li>
+<li>nextNote() is used to retrieve the next note in the sequence. In the case of a playable note, the application invokes the sound generation hardware. The application implements the logic required for the note or pause timing before processing the next note.</li>
+<li>nextNote() returns true when the end of the RTTTL string is reached. Alternatively, the isEoln() method can be used to test for end of line being reached.</li>
 </ul>
 <h2>Library managed playback </h2>
-<p>The RTTLParser_Cback example demonstrates the library used in this mode.</p>
-<p>In this mode the application provides the library with a callback that will manage the sound generation hardware and lets the library manage all the duration timing.</p>
+<p>The RTTLParser_Cback example demonstrates this use of the library.</p>
+<p>In this mode the application provides the library with a callback that will manage the sound generation hardware. The library will manage duration timing for pauses (ie, the application is not aware of these) and will provide the callback with note on and note off events for the application to process.</p>
+<p>The simplified flow for the application is:</p>
 <ul>
-<li>setCallback() is used to set the callback function.</li>
-<li>The tune to play is set up using the setTune() method.</li>
-<li>The run() method is invoked every time through main program loop.</li>
-<li>As required by timing, the callback function will be called from the library to allow the application to manage turning notes on and off. </li>
+<li>setCallback() is used to register the callback function (can be done in setup()).</li>
+<li>setTune() is used initialize the library for the specified RTTTL string.</li>
+<li>run() is invoked every time through main program loop. This will run a Finite State Machine that manages the sequencing and timing of notes, and invokes the callback when required.</li>
+<li>run() returns true when the end of the RTTTL string has been reached.</li>
 </ul>
+<h2>Parsing without playback </h2>
+<p>Parsing without playback is identical to an application managed playback without 'playing' the notes. The entire string can be scanned very fast when the note durations and pauses are ignored. Once the string has been parsed, it will need to be reset using setTune().</p>
+<p>Parsing an RTTTL string is useful to gather information about the string, such as what octaves are being used, the range of notes, etc. These can then be used to modify subsequent playback (eg, shifting the octave range) to suit a particular sound output device. </p>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Nov 14 2019 15:36:12 for RTTTLParser Library by
+    <li class="footer">Generated on Sat Nov 16 2019 12:57:59 for RTTTLParser Library by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.16 </li>
   </ul>
